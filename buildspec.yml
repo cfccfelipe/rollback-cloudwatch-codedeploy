@@ -1,0 +1,36 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.11
+    commands:
+      - echo "Installing build dependencies"
+      - python -m pip install --upgrade pip
+      - python -m pip install -r requirements.txt
+  pre_build:
+    commands:
+      - echo "Validating application source"
+      - python -m py_compile application.py
+      - test -f appspec.yml
+      - test -f scripts/start_application.sh
+      - test -f scripts/stop_application.sh
+      - test -f scripts/install_dependencies.sh
+      - test -f scripts/validate_service.sh
+  build:
+    commands:
+      - echo "Preparing deployment bundle"
+      - chmod +x scripts/*.sh
+      - echo "Build completed on $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  post_build:
+    commands:
+      - echo "Artifact is ready for CodeDeploy"
+
+artifacts:
+  files:
+    - application.py
+    - appspec.yml
+    - requirements.txt
+    - buildspec.yml
+    - scripts/**/*
+  discard-paths: no
