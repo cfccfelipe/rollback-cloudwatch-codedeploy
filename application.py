@@ -1,10 +1,10 @@
 import os
 
-from flask import Flask
+from flask import Flask, request
 
 app = Flask(__name__)
 
-APP_VERSION = os.environ.get("APP_VERSION", "1.0.0")
+APP_VERSION = os.environ.get("APP_VERSION", "bad-rollback-test")
 
 
 @app.route("/")
@@ -15,6 +15,11 @@ def home():
 
 @app.route("/health")
 def health():
+    # Temporary rollback test: pass local lifecycle validation but fail the
+    # ALB target group health check so the ALBUnhealthy alarm fires.
+    ua = request.headers.get("User-Agent", "")
+    if "ELB-HealthChecker" in ua:
+        return "unhealthy", 503
     return "OK", 200
 
 

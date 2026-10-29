@@ -29,3 +29,7 @@ hooks:
     - location: scripts/validate_service.sh
       timeout: 120
       runas: root
+  AfterAllowTraffic:
+    - location: scripts/hold_for_alarm.sh
+      timeout: 600
+      runas: root
